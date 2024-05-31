@@ -14,7 +14,9 @@ To use this assembler, first you must have a file written in the HACK assembly l
 Some example files are provided in the test_asm_files directory.
 
 First, clone this repository
-`git clone https://github.com/FunHaver/HackAssembler.git`
+```bash
+git clone https://github.com/FunHaver/HackAssembler.git
+```
 
 Then, execute the HackAssembler.py file found in the repository's root directory. This program takes one argument, the name of the .asm file that is to be assembled.
 
