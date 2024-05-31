@@ -1,3 +1,8 @@
+# Class with one public method: parse
+# Takes an UTF-encoded text file containing the HACK assembler language
+# And outputs a list of dicts, each dict containing the instruction type and fields that 
+# are found in each instruction.
+
 class HackParser:
     def __init__(self):
         self.parsedInstructions = []
