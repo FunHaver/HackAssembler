@@ -3,6 +3,7 @@
 # the values of each instruction's field with the
 # corresponding binary encoding (Still UTF-8 string encoded)
 import sys
+from InstructionType import InstructionType
 class HackEncoder:
     def __init__(self):
         self.encodedInstructions = []
@@ -51,13 +52,13 @@ class HackEncoder:
 
         
 
-    def __translateOpCode(self,typeString):
-        if typeString == "A":
+    def __translateOpCode(self,instructionType):
+        if instructionType == InstructionType.ADDRESS:
             return "0"
-        elif typeString == "C":
+        elif instructionType == InstructionType.COMMAND:
             return "111"
         else:
-            sys.exit("Error, unknown instruction type: " + typeString)
+            sys.exit("Error, unknown instruction type: " + instructionType)
     
     # Input mneumonic dest field, return machine code representation
     def __encodeDestField(self,mDestField):
@@ -91,15 +92,15 @@ class HackEncoder:
             compCode = ""
             jumpCode = ""
             opCode = self.__translateOpCode(instruction['type'])
-            if(instruction['type'] == "A"):
+            if(instruction['type'] == InstructionType.ADDRESS):
                 addressValue = self.__encodeAddressField(instruction['value'])
                 binInstructionList.append(opCode+addressValue)
-            elif(instruction['type'] == "C"):
+            elif(instruction['type'] == InstructionType.COMMAND):
                 destCode = self.__encodeDestField(instruction['dest'])
                 compCode = self.__encodeCompField(instruction['comp'])
                 jumpCode = self.__encodeJumpField(instruction['jump'])
                 binInstructionList.append(opCode+compCode+destCode+jumpCode)
             else:
-                sys.exit("Error: unknown instruction type: " + instruction.type)
+                sys.exit("Error on line " + instruction["sourceLine"] + ": unknown instruction type: " + instruction.type)
 
         return binInstructionList

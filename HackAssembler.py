@@ -1,5 +1,5 @@
 import sys, os, re
-import HackParser, HackEncoder
+import HackParser, HackEncoder, HackSymbolTable
 def main():
     #initialize environment
     if len(sys.argv) < 2:
@@ -9,11 +9,13 @@ def main():
     pathList = filePath.split("/")
     fileName = pathList[len(pathList) - 1]
     asmPath = os.path.join(workingDirectory, filePath)
+    
+    symbolTable = HackSymbolTable.HackSymbolTable()
 
     #read in file
     with open(asmPath,"r",encoding="utf-8") as file:
         asmFile = file.readlines()
-    parser = HackParser.HackParser()
+    parser = HackParser.HackParser(symbolTable)
     #get list of instructions, each instruction separated into its fields
     parsedHack = parser.parse(asmFile)
     
