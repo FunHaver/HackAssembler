@@ -58,7 +58,7 @@ class HackEncoder:
         elif instructionType == InstructionType.COMMAND:
             return "111"
         else:
-            sys.exit("Error, unknown instruction type: " + instructionType)
+            sys.exit("Error, unknown instruction type: " + instructionType.name)
     
     # Input mneumonic dest field, return machine code representation
     def __encodeDestField(self,mDestField):

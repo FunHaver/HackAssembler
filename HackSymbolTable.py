@@ -1,3 +1,5 @@
+import sys
+
 class HackSymbolTable:
     # A table containing all symbols used in the asm file
     def __init__(self):
@@ -23,8 +25,12 @@ class HackSymbolTable:
         self.addEntry(symbol,self.__symbolicRamCounter)
         self.__symbolicRamCounter += 1
 
+    #Adds new entry to symbol table, will throw error if symbol already exists
     def addEntry(self, symbol, value):
-        self.__symbolTable[symbol] = value
+        if symbol not in self.__symbolTable:
+            self.__symbolTable[symbol] = value
+        else:
+            sys.exit("Error: " + symbol + " already has a value and cannot be reassigned.")
 
     def getAddress(self, symbol):
         return self.__symbolTable[symbol]

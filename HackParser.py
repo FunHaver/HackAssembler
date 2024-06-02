@@ -11,6 +11,7 @@ class HackParser:
         self.parsedInstructions = []
         self.symbolTable = symbolTable
         self.__sourceLine = 0 # keeps track of assembly source line for debugging
+        self.__instructionLine = 0 #keeps track of actual "assembled" instruction line
 
     # Classifies instruction as an A, C, Symbolic, or ignorable instruction. 
     # otherwise return true
@@ -47,29 +48,17 @@ class HackParser:
                 validChar = True
                 break
         return validChar
-            
-    def __handleSymbolicAddress(self,symbol):
-        if self.symbolTable.contains(symbol):
-            return self.symbolTable.getAddress(symbol)
-        else:
-            self.symbolTable.addAddressEntry(symbol)
-            return str(self.symbolTable.getAddress(symbol))
 
     # Splits A instruction into fields, will replace symbols with appropriate RAM address
     def __splitAInstruction(self,instruction):
         splitField = {
             "type": InstructionType.ADDRESS,
             "sourceLine": self.__getCurrentSourceLine(),
-            "value": ''
+            "value": instruction[1:],
+            "symbolic": False
         }
-
-        restOfA = instruction[1:]
-
-        if re.search(r'[a-zA-Z]',restOfA) is not None:
-            splitField['value'] = self.__handleSymbolicAddress(restOfA)
-        else:
-            splitField['value'] = restOfA
-        
+        if re.search(r'[a-zA-Z]',instruction[1]) is not None:
+            splitField["symbolic"] = True
         return splitField
 
 
@@ -114,7 +103,20 @@ class HackParser:
 
     #Add to Symbol Table or mark for replacement, replace on second pass
     def __splitSymbolInstruction(self, line):
-        print(line)
+        symbolDeclaration = ""
+        for char in line:
+            if(char == ")"):
+                break
+            elif(char == "("):
+                continue
+            else:
+                symbolDeclaration += char
+        if line[len(symbolDeclaration) + 1] != ")":
+            sys.exit("Error line " + self.__getCurrentSourceLine() + ": Malformed symbol " + line)
+        else:
+            symbolValue = self.__getCurrentInstructionLine()
+            self.symbolTable.addEntry(symbolDeclaration,symbolValue)
+
             
     def __incrementSourceLine(self):
         self.__sourceLine += 1
@@ -122,25 +124,31 @@ class HackParser:
     def __getCurrentSourceLine(self):
         return str(self.__sourceLine)
     
+    def __incrementInstructionLine(self):
+        self.__instructionLine += 1
+    
+    def __getCurrentInstructionLine(self):
+        return self.__instructionLine
+    
     # takes file in, outputs list dicts representing valid assembler instructions
     def parse(self,asmFile):
         # split by newline and store instruction as dict 
         # in list if valid asm instruction
-        romPos = 0 # does not increment if comment or symbol
+
         for line in asmFile:
-            lineNoWS = "".join(line.split())
             self.__incrementSourceLine()
+            lineNoWS = "".join(line.split())
             lineType = self.__instructionClassifier(lineNoWS)
             if lineType == InstructionType.IGNORE:
                 continue
             elif lineType == InstructionType.ADDRESS:
                 self.parsedInstructions.append(self.__splitAInstruction(lineNoWS))
-                romPos += 1
+                self.__incrementInstructionLine()
             elif lineType == InstructionType.COMMAND:
                 self.parsedInstructions.append(self.__splitCInstruction(lineNoWS))
-                romPos += 1
+                self.__incrementInstructionLine()
             elif lineType == InstructionType.SYMBOL:
-                self.parsedInstructions.append(self.__splitSymbolInstruction(lineNoWS))
+                self.__splitSymbolInstruction(lineNoWS)
             else:
                 sys.exit("ERROR Line " + self.__getCurrentSourceLine() + ": Unknown Instruction \"" + lineNoWS + "\"")
                 
