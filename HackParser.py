@@ -4,7 +4,7 @@
 # are found in each instruction.
 from InstructionType import InstructionType
 
-import re
+import re, sys
 
 class HackParser:
     def __init__(self, symbolTable):
@@ -142,7 +142,7 @@ class HackParser:
             elif lineType == InstructionType.SYMBOL:
                 self.parsedInstructions.append(self.__splitSymbolInstruction(lineNoWS))
             else:
-                print("ERROR Line " + self.__getCurrentSourceLine() + ": Unknown Instruction \"" + lineNoWS + "\"")
+                sys.exit("ERROR Line " + self.__getCurrentSourceLine() + ": Unknown Instruction \"" + lineNoWS + "\"")
                 
 
 
