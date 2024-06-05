@@ -59,8 +59,6 @@ class HackParser:
         }
         if re.search(r'[0-9]',instruction[1]) is None:
             splitField["symbolic"] = True
-        print(instruction[1])
-        print(splitField["symbolic"])
         return splitField
 
 
