@@ -28,7 +28,7 @@ python3 HackAssembler.py test_asm_files/add/Add.asm
 
 The resulting "binary" file (it is actually a UTF-8 encoded file of strings of binary numbers), will be written to your current working directory.
 
-The result of the example command will place a .hack file in the hack_assembler directory.
+The result of the example command will place a .hack file in the HackAssembler directory.
 
 ## Running the .hack file
 Now that you are in posession of an assembled file, it can be tested via the CPU emulator tool provided by the NAND2TETRIS course located here: https://nand2tetris.github.io/web-ide/cpu
